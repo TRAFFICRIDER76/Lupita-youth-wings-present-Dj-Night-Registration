@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJ Night — Entry Pass</title>
+<meta name="theme-color" content="#0b0318">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:22px 14px;min-height:100vh;color:#f3ecff;
+    background:radial-gradient(1200px 600px at 50% -10%,#2a0b4d 0%,#150626 45%,#070210 100%);
+  }
+  .chip{display:inline-block;font-size:10px;padding:3px 10px;border-radius:999px;letter-spacing:.9px;
+        background:rgba(127,233,255,.14);border:1px solid rgba(127,233,255,.45);color:#bff4ff;font-weight:700}
+  .tid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:800;letter-spacing:1.6px}
+
+  .ticket{position:relative;display:flex;width:min(1040px,96vw);height:min(566px,78vh);
+    border-radius:24px;overflow:hidden;background:#0a0316;
+    box-shadow:0 30px 90px rgba(120,20,220,.55),0 0 0 1px rgba(190,150,255,.25)}
+  .ticket::before{content:"";position:absolute;inset:-40px;
+    background:url(DJ-night-poster.jpg) center center/cover no-repeat;
+    filter:blur(30px) brightness(.40) saturate(135%)}
+  .left{position:relative;flex:1;min-width:0;display:flex;align-items:center;padding:10px 0 10px 10px}
+  .left img{display:block;width:100%;height:100%;object-fit:contain;border-radius:14px;
+    box-shadow:0 14px 40px rgba(0,0,0,.55)}
+  .panel{position:relative;width:min(348px,42%);flex:0 0 auto;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:22px 24px;text-align:center;
+    background:linear-gradient(165deg,rgba(96,42,170,.40),rgba(26,10,52,.55) 55%,rgba(10,3,24,.62));
+    border-left:1px solid rgba(210,175,255,.45);
+    backdrop-filter:blur(24px) saturate(170%) brightness(1.12);
+    -webkit-backdrop-filter:blur(24px) saturate(170%) brightness(1.12);
+    box-shadow:-30px 0 70px rgba(0,0,0,.40),inset 1px 0 0 rgba(255,255,255,.30)}
+  .eyebrow{font-size:9px;letter-spacing:3.2px;text-transform:uppercase;color:#cdb8ff}
+  .name{font-size:19px;font-weight:800;margin:5px 0 1px;line-height:1.2}
+  .parish{font-size:10.5px;color:#c3b3dd;line-height:1.35}
+  .qrbox{width:166px;margin:11px auto 9px;padding:8px;background:#fff;border-radius:14px;
+    box-shadow:0 12px 26px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.6)}
+  .qrbox img{display:block;width:100%;height:auto;border-radius:8px}
+  .row{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:2px}
+  .foot{font-size:8.5px;line-height:1.5;color:#b7a6d4;margin-top:8px}
+  .loading{font-size:11px;color:#b7a6d4;padding:30px 0}
+
+  /* phone: poster upar, glass panel neeche */
+  @media (max-width:760px){
+    body{padding:0}
+    .ticket{flex-direction:column;width:100%;height:auto;border-radius:0;box-shadow:none}
+    .ticket::before{inset:0}
+    .left{padding:0}
+    .left img{border-radius:0;height:auto;object-fit:cover}
+    .panel{width:100%;border-left:none;border-top:1px solid rgba(210,175,255,.45);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.25);padding:20px 18px 22px}
+    .name{font-size:21px}
+    .qrbox{width:190px}
+  }
+</style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="left">
+      <img src="DJ-night-poster.jpg" alt="DJ Night — 20 November 2026, Lupita Hall Telco"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="panel">
+      <div class="eyebrow">🎧 Entry Pass</div>
+      <div class="name" id="pName">Your Name</div>
+      <div class="parish" id="pParish">&nbsp;</div>
+      <div class="qrbox" id="qrBox"><div class="loading">Loading QR…</div></div>
+      <div class="row">
+        <span class="tid" id="pTid">DJ-2026-000</span>
+        <span class="chip">APPROVED</span>
+      </div>
+      <div class="foot">Scan at the gate · Personal &amp; non-transferable</div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // The deployed Apps Script Web App (same URL used by the registration form).
+  var GATE = 'https://script.google.com/macros/s/AKfycbx75pAL6AhfcWhMTBzNo694EKzCSM-PQaCPKHMJ6AoMaHgdyySsBpBkt1XZJazx-DOt/exec';
+
+  var q = new URLSearchParams(location.search);
+  var ticket = (q.get('t') || q.get('ticket') || '').trim();
+  var name   = (q.get('n') || q.get('name') || '').trim();
+  var parish = (q.get('p') || q.get('parish') || '').trim();
+
+  if (!/^[A-Za-z0-9\-]{3,40}$/.test(ticket)) ticket = 'DJ-2026-101';   // demo mode
+  if (!name) name = 'Your Name';
+
+  document.getElementById('pTid').textContent = ticket;
+  document.getElementById('pName').textContent = name;
+  document.getElementById('pParish').textContent = parish || ' ';
+  document.title = 'DJ Night — Entry Pass ' + ticket;
+
+  var target = GATE + '?ticket=' + encodeURIComponent(ticket);
+  var img = new Image();
+  img.alt = 'Entry QR for ' + ticket;
+  img.width = 190;
+  img.onload = function () {
+    var box = document.getElementById('qrBox');
+    box.innerHTML = '';
+    box.appendChild(img);
+  };
+  img.onerror = function () {
+    document.getElementById('qrBox').innerHTML =
+      '<div style="color:#1b0a2e;font-size:10px;padding:14px 6px;line-height:1.4;">' +
+      'QR load nahi hua — internet check karo</div>';
+  };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=520x520&margin=10' +
+            '&color=1b0a2e&bgcolor=ffffff&data=' + encodeURIComponent(target);
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a565965ffe4c4015',t:'MTc5Mzk4MzcyMw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a565965ffe4c4015',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
